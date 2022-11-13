@@ -1,0 +1,21 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: no
+
+  tasks:
+    - name: upload MegaCli64
+      copy:
+        src: files/MegaCli-8.07.14-1.noarch.rpm
+        dest: /tmp/MegaCli-8.07.14-1.noarch.rpm
+        
+    - name: install MegaCli64 rpm from a local file
+      yum:
+        name: /tmp/MegaCli-8.07.14-1.noarch.rpm
+        state: present
+        
+    - name: create symlink for MegaCli64
+      file:
+        src: /opt/MegaRAID/MegaCli/MegaCli64
+        dest: /usr/sbin/MegaCli
+        state: link
