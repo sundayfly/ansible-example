@@ -1,0 +1,24 @@
+---
+- hosts: all
+  become: yes
+  gather_facts: no
+
+  tasks:
+    - name: backup iptables
+      copy:
+        src: /etc/sysconfig/iptables
+        dest: /etc/sysconfig/iptables.bak
+        remote_src: yes
+
+    - name: add iptables line for internal logic service
+      blockinfile:
+        path: /etc/sysconfig/iptables
+        insertafter: '^:OUTPUT ACCEPT'
+        marker: "# {mark} iptables whitelist only for internal logic service"
+        block: |
+          -A INPUT -s 10.0.0.0/8 -j ACCEPT
+
+    - name: reload service
+      service: name=iptables state=reloaded
+      tags:
+        - reload
